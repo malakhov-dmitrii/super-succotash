@@ -52,7 +52,7 @@ const TARGET_POS_1 = [
   [323, 570],
   [197, 576],
   [328, 609]
-];
+].flat();
 
 const videoWidth = 600;
 const videoHeight = 500;
@@ -65,6 +65,16 @@ let isNeedToShoot = false;
 let currentPose = -2;
 let prevPose = -1;
 
+let isSleeping = false;
+let prevPoseTimestamp = -1;
+let currentPoseTimestamp = -1;
+
+let timeStart;
+let timeEnd;
+
+let isPose1 = true;
+let isNone = false;
+
 const shoot = document.querySelector("#shoot");
 
 shoot.addEventListener("click", () => {
@@ -73,25 +83,13 @@ shoot.addEventListener("click", () => {
   isShot = false;
 });
 
-// const requestDebounce = () => {
-//   if ()
-// };
-// const poseChangeDebounce = () => {
-//     if (isPoseDetected && currentPose !== prevPose) {
-//         console.log({currentPose, prevPose});
-//         setTimeout(() => {
-//             isPoseDetected = false;
-//         }, 3000);
-//     }
-// };
-
-let counter = 10;
-setInterval(() => {
-  console.log(--counter);
-  if (counter < 0) {
-    isNeedToShoot = true;
-  }
-}, 1000);
+// let counter = 10;
+// setInterval(() => {
+//   console.log(--counter);
+//   if (counter < 0) {
+//     isNeedToShoot = true;
+//   }
+// }, 1000);
 
 const updatePos = data => {
   fetch("https://arngry.herokuapp.com/pose", {
@@ -532,98 +530,55 @@ function detectPoseInRealTime(video, net) {
     // and draw the resulting skeleton and keypoints if over certain confidence
     // scores
 
-    // console.log(poses);
+    const poseVector1 = TARGET_POS_1;
+    const poseVector2 = poses[0].keypoints.map(item => [(item.position.x), Math.floor(item.position.y)]).flat();
 
-    const pose = poses[0].keypoints;
+    let cosineSimilarity = similarity(poseVector1, poseVector2);
+    let distance = 2 * (1 - cosineSimilarity);
+    const eDistance = Math.sqrt(distance);
 
-    const leftShoulder = pose.find(item => item.part === "leftShoulder").position;
-    const leftWrist = pose.find(item => item.part === "leftWrist").position;
-    const leftElbow = pose.find(item => item.part === "leftElbow").position;
-    const leftEar = pose.find(item => item.part === "leftEar").position;
+    if (eDistance < 0.25) {
+      if (!isPose1) {
+        isPose1 = true;
+        isNone = false;
+        console.log("Pose 1 detected");
+        timeStart = new Date().getTime();
+        updatePos({
+          timeStart,
+          pose_id: 1,
+        });
+        if (!currentPoseTimestamp) {
+          currentPoseTimestamp = new Date().getTime();
+        }
+      }
+      // currentPoseTimeDiff = new Date().getTime();
+    } else {
+      // console.log({
+      //   prevPoseTimestamp,
+      //   currentPoseTimestamp
+      // });
+      // if (prevPoseTimestamp > 0) {
 
-    const rightShoulder = pose.find(item => item.part === "rightShoulder").position;
-    const rightWrist = pose.find(item => item.part === "rightWrist").position;
-    const rightElbow = pose.find(item => item.part === "rightElbow").position;
-    const rightEar = pose.find(item => item.part === "rightEar").position;
+      // } else {
+      if (!isNone) {
+        isPose1 = false;
+        isNone = true;
+        console.log("None detected");
+        timeEnd = new Date().getTime();
+        updatePos({
+          timeEnd,
+          pose_id: 1,
+        });
+        prevPoseTimestamp = new Date().getTime();
+      }
+      // }
+    }
 
-    // if (isNeedToShoot && !isShot) {
-    //     console.log(JSON.stringify(pose.map(item => [item.position.x, item.position.y])));
-    //     isShot = true;
+
+    // if (prevPoseTimestamp && currentPoseTimestamp && prevPoseTimestamp - currentPoseTimestamp > 1000) {
+    //   console.log('YOU`RE FUCKED UP');
     // }
 
-    const p = pose.map(item => [Math.floor(item.position.x), Math.floor(item.position.y)]);
-    console.log(TARGET_POS_1.map((node, idx, arr) => {
-      const [x, y] = node;
-      const [x1, y1] = p[idx];
-
-      return similarity([x, y], [x1, y1]);
-    }));
-
-    // console.log(
-    //     distance(
-    //         TARGET_POS_1,
-    //         pose.map(item => [Math.floor(item.position.x), Math.floor(item.position.y)])
-    //     )
-    // );
-
-    // sqrt((x1 - x)**2 + (y1 - y)**2)
-
-    //     if (
-    //         leftWrist.y < leftShoulder.y &&
-    //         leftElbow.y < leftShoulder.y &&
-    //         rightWrist.y < rightShoulder.y &&
-    //         rightElbow.y < rightShoulder.y
-    //     ) {
-    //         prevPose = currentPose;
-    //         currentPose = 1;
-    //         console.log("Haaaands up!");
-    //     }
-
-    //     if (
-    //         leftWrist.y > leftShoulder.y &&
-    //         leftElbow.y > leftShoulder.y &&
-    //         rightWrist.y > rightShoulder.y &&
-    //         rightElbow.y > rightShoulder.y
-    //     ) {
-    //         prevPose = currentPose;
-    //         currentPose = 2;
-    //         console.log("Haaaands down!");
-    //     }
-
-    //     if (
-    //         leftWrist.y < leftShoulder.y &&
-    //         leftElbow.y < leftShoulder.y &&
-    //         rightWrist.y > rightShoulder.y &&
-    //         rightElbow.y > rightShoulder.y
-    //     ) {
-    //         prevPose = currentPose;
-    //         currentPose = 11;
-    //         console.log("Left hand is up!");
-    //     }
-
-    //     if (
-    //         leftWrist.y > leftShoulder.y &&
-    //         leftElbow.y > leftShoulder.y &&
-    //         rightWrist.y < rightShoulder.y &&
-    //         rightElbow.y < rightShoulder.y
-    //     ) {
-    //         prevPose = currentPose;
-    //         currentPose = 10;
-    //         console.log("Right hand is up!");
-    //     }
-    //     isPoseDetected = true;
-
-    // isNeedToShoot = false;
-    // isShot = false;
-    // }
-
-    // function cosineDistanceMatching(poseVector1, poseVector2) {
-    //     let cosineSimilarity = similarity(poseVector1, poseVector2);
-    //     let distance = 2 * (1 - cosineSimilarity);
-    //     return Math.sqrt(distance);
-    // }
-
-    // cosineDistanceMatching({}, {});
 
     poses.forEach(({
       score,
