@@ -2938,6 +2938,11 @@ etag@~1.8.1:
   resolved "https://registry.yarnpkg.com/etag/-/etag-1.8.1.tgz#41ae2eeb65efa62268aebfea83ac7d79299b0887"
   integrity sha1-Qa4u62XvpiJorr/qg6x9eSmbCIc=
 
+euclidean-distance@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/euclidean-distance/-/euclidean-distance-1.0.0.tgz#703bc213e97c1d731d79b599e937941ba9670a68"
+  integrity sha1-cDvCE+l8HXMdebWZ6TeUG6lnCmg=
+
 events@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/events/-/events-3.0.0.tgz#9a0a0dfaf62893d92b875b8f2698ca4114973e88"
