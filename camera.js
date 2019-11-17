@@ -518,6 +518,8 @@ const TARGET_POS_4 = [{
   }
 }].map(item => [item.position.x, item.position.y]).flat();
 
+const SUPER_COMBO = ['bu', 'ld', 'lu', 'rd', 'ld'];
+
 const videoWidth = 600;
 const videoHeight = 500;
 const stats = new Stats();
@@ -541,6 +543,14 @@ let timeEnd;
 
 let isPose1 = true;
 let isNone = false;
+
+
+let isLeftUp = false;
+let isLeftDown = false;
+let isBothUp = false;
+let isBothDown = false;
+let isRightUp = false;
+let isRightDown = false;
 
 const shoot = document.querySelector("#shoot");
 
@@ -1124,6 +1134,8 @@ function detectPoseInRealTime(video, net) {
     const rightHipNode = keypoints.find(point => point.part === 'rightHip');
     const leftShoulderNode = keypoints.find(point => point.part === 'leftShoulder');
     const rightShoulderNode = keypoints.find(point => point.part === 'rightShoulder');
+    const leftWristNode = keypoints.find(point => point.part === 'leftWrist');
+    const rightWristNode = keypoints.find(point => point.part === 'rightWrist');
     const leftKneeNode = keypoints.find(point => point.part === 'leftKnee');
     const rightKneeNode = keypoints.find(point => point.part === 'rightKnee');
     const leftAnkleNode = keypoints.find(point => point.part === 'leftAnkle');
@@ -1154,6 +1166,76 @@ function detectPoseInRealTime(video, net) {
         }
         tickNormalizerContainerY = [];
       }
+
+      if (leftWristNode.position.y > leftShoulderNode.position.y &&
+        rightWristNode.position.y > rightShoulderNode.position.y && !isBothDown) {
+        isBothDown = true;
+        isBothUp = false;
+        isLeftUp = false;
+        isLeftDown = false;
+        isRightDown = false;
+        isRightUp = false;
+        console.log('Both down!');
+      }
+
+      if (leftWristNode.position.y < leftShoulderNode.position.y &&
+        rightWristNode.position.y < rightShoulderNode.position.y && !isBothUp) {
+        isBothDown = false;
+        isBothUp = true;
+        isLeftUp = false;
+        isLeftDown = false;
+        isRightDown = false;
+        isRightUp = false;
+        console.log('Both up!');
+        updatePos({
+          last_pose: {
+            time_start: new Date().getTime() - 500,
+            time_end: new Date().getTime(),
+            pose_id: 999,
+          }
+        });
+      }
+
+      if (leftWristNode.position.y < leftShoulderNode.position.y && !isLeftUp && !isBothUp) {
+        isBothDown = false;
+        isBothUp = false;
+        isLeftUp = true;
+        isLeftDown = false;
+        isRightDown = false;
+        isRightUp = false;
+        console.log('Left up!');
+      }
+
+      if (leftWristNode.position.y > leftShoulderNode.position.y && !isLeftDown && !isBothDown) {
+        isBothDown = false;
+        isBothUp = false;
+        isLeftUp = false;
+        isLeftDown = true;
+        isRightDown = false;
+        isRightUp = false;
+        console.log('Left down!');
+      }
+
+      if (rightWristNode.position.y < rightShoulderNode.position.y && !isRightUp && !isBothUp) {
+        isBothDown = false;
+        isBothUp = false;
+        isLeftUp = false;
+        isLeftDown = false;
+        isRightDown = false;
+        isRightUp = true;
+        console.log('Right up!');
+      }
+
+      if (rightWristNode.position.y > rightShoulderNode.position.y && !isRightDown && !isBothDown) {
+        isBothDown = false;
+        isBothUp = false;
+        isLeftUp = false;
+        isLeftDown = false;
+        isRightDown = true;
+        isRightUp = false;
+        console.log('Right down!');
+      }
+      // const SUPER_COMBO = ['bu', 'ld', 'lu', 'rd', 'ld'];
     }
 
     // if (poses[0].score > 0.3 &&
