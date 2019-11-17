@@ -547,6 +547,50 @@ shoot.addEventListener("click", () => {
   isShot = false;
 });
 const stop = document.querySelector("#stop");
+const pos1 = document.querySelector("#pos1");
+const pos2 = document.querySelector("#pos2");
+const pos3 = document.querySelector("#pos3");
+const pos4 = document.querySelector("#pos4");
+
+pos1.addEventListener("click", () => {
+  updatePos({
+    last_pose: {
+      time_start: new Date().getTime() - 4000,
+      time_end: new Date().getTime() - 500,
+      pose_id: 1,
+    }
+  });
+});
+
+pos2.addEventListener("click", () => {
+  updatePos({
+    last_pose: {
+      time_start: new Date().getTime() - 3000,
+      time_end: new Date().getTime() - 200,
+      pose_id: 2,
+    }
+  });
+});
+
+pos3.addEventListener("click", () => {
+  updatePos({
+    last_pose: {
+      time_start: new Date().getTime() - 5000,
+      time_end: new Date().getTime() - 10,
+      pose_id: 3,
+    }
+  });
+});
+
+pos4.addEventListener("click", () => {
+  updatePos({
+    last_pose: {
+      time_start: new Date().getTime() - 4000,
+      time_end: new Date().getTime() - 50,
+      pose_id: 4,
+    }
+  });
+});
 
 stop.addEventListener("click", () => {
   updatePos({
