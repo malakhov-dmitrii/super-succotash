@@ -1,0 +1,8 @@
+{
+  "version": "v1",
+  "packages": {
+    "@tensorflow-models/posenet": {
+      "signature": "9aa5a557be2971e5e0345ed1eaab9286"
+    }
+  }
+}
