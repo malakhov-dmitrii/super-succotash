@@ -34,25 +34,489 @@ import {
 const similarity = require("compute-cosine-similarity");
 // const distance = require("euclidean-distance");
 
-const TARGET_POS_1 = [
-  [288, 216],
-  [274, 204],
-  [299, 205],
-  [256, 211],
-  [319, 209],
-  [232, 276],
-  [345, 269],
-  [163, 335],
-  [443, 245],
-  [133, 408],
-  [436, 165],
-  [246, 450],
-  [329, 452],
-  [243, 570],
-  [323, 570],
-  [197, 576],
-  [328, 609]
-];
+const TARGET_POS_1 = [{
+  "score": 0.9908686876296997,
+  "part": "nose",
+  "position": {
+    "x": 415.93650309244794,
+    "y": 272.3636067708333
+  }
+}, {
+  "score": 0.9932006001472473,
+  "part": "leftEye",
+  "position": {
+    "x": 418.77252197265625,
+    "y": 262.5507609049479
+  }
+}, {
+  "score": 0.8547982573509216,
+  "part": "rightEye",
+  "position": {
+    "x": 424.187744140625,
+    "y": 274.3563028971354
+  }
+}, {
+  "score": 0.9743635058403015,
+  "part": "leftEar",
+  "position": {
+    "x": 414.1456298828125,
+    "y": 245.94010416666663
+  }
+}, {
+  "score": 0.23263892531394958,
+  "part": "rightEar",
+  "position": {
+    "x": 427.6547037760417,
+    "y": 275.5929972330729
+  }
+}, {
+  "score": 0.9953951835632324,
+  "part": "leftShoulder",
+  "position": {
+    "x": 339.6566162109375,
+    "y": 229.3892822265625
+  }
+}, {
+  "score": 0.9445495009422302,
+  "part": "rightShoulder",
+  "position": {
+    "x": 383.0687662760417,
+    "y": 332.59855143229163
+  }
+}, {
+  "score": 0.9884846806526184,
+  "part": "leftElbow",
+  "position": {
+    "x": 286.05466715494794,
+    "y": 171.34035237630206
+  }
+}, {
+  "score": 0.9777011275291443,
+  "part": "rightElbow",
+  "position": {
+    "x": 369.07334391276044,
+    "y": 395.269775390625
+  }
+}, {
+  "score": 0.9650675058364868,
+  "part": "leftWrist",
+  "position": {
+    "x": 233.67561848958337,
+    "y": 103.88766479492188
+  }
+}, {
+  "score": 0.9833654761314392,
+  "part": "rightWrist",
+  "position": {
+    "x": 364.90559895833337,
+    "y": 475.4837646484375
+  }
+}, {
+  "score": 0.9955465793609619,
+  "part": "leftHip",
+  "position": {
+    "x": 263.6195068359375,
+    "y": 336.44140625
+  }
+}, {
+  "score": 0.9902048110961914,
+  "part": "rightHip",
+  "position": {
+    "x": 297.70245361328125,
+    "y": 363.806640625
+  }
+}, {
+  "score": 0.971397876739502,
+  "part": "leftKnee",
+  "position": {
+    "x": 204.50716145833337,
+    "y": 439.9601643880208
+  }
+}, {
+  "score": 0.9034759402275085,
+  "part": "rightKnee",
+  "position": {
+    "x": 306.1921793619792,
+    "y": 455.48771158854163
+  }
+}, {
+  "score": 0.9358130693435669,
+  "part": "leftAnkle",
+  "position": {
+    "x": 171.828125,
+    "y": 522.3367919921875
+  }
+}, {
+  "score": 0.8826147317886353,
+  "part": "rightAnkle",
+  "position": {
+    "x": 331.78057861328125,
+    "y": 513.4849446614583
+  }
+}].map(item => [item.position.x, item.position.y]).flat();
+
+const TARGET_POS_2 = [{
+  "score": 0.9991829991340637,
+  "part": "nose",
+  "position": {
+    "x": 247.74943033854169,
+    "y": 156.07637532552081
+  }
+}, {
+  "score": 0.995419979095459,
+  "part": "leftEye",
+  "position": {
+    "x": 234.01680501302087,
+    "y": 150.19091796875
+  }
+}, {
+  "score": 0.9979812502861023,
+  "part": "rightEye",
+  "position": {
+    "x": 257.09663899739587,
+    "y": 148.95231119791666
+  }
+}, {
+  "score": 0.9309232234954834,
+  "part": "leftEar",
+  "position": {
+    "x": 223.02632649739587,
+    "y": 156.54903157552081
+  }
+}, {
+  "score": 0.953841507434845,
+  "part": "rightEar",
+  "position": {
+    "x": 272.06247965494794,
+    "y": 151.66215006510416
+  }
+}, {
+  "score": 0.9993361830711365,
+  "part": "leftShoulder",
+  "position": {
+    "x": 213.07816569010419,
+    "y": 208.04302978515625
+  }
+}, {
+  "score": 0.9985609650611877,
+  "part": "rightShoulder",
+  "position": {
+    "x": 297.1982828776042,
+    "y": 190.80411783854166
+  }
+}, {
+  "score": 0.9982522130012512,
+  "part": "leftElbow",
+  "position": {
+    "x": 136.6318359375,
+    "y": 217.35866292317706
+  }
+}, {
+  "score": 0.9969882369041443,
+  "part": "rightElbow",
+  "position": {
+    "x": 329.58477783203125,
+    "y": 220.26560465494788
+  }
+}, {
+  "score": 0.982961118221283,
+  "part": "leftWrist",
+  "position": {
+    "x": 54.04475911458337,
+    "y": 220.89723714192706
+  }
+}, {
+  "score": 0.9922548532485962,
+  "part": "rightWrist",
+  "position": {
+    "x": 316.40753173828125,
+    "y": 237.23555501302081
+  }
+}, {
+  "score": 0.9977959394454956,
+  "part": "leftHip",
+  "position": {
+    "x": 273.5451863606771,
+    "y": 320.2342529296875
+  }
+}, {
+  "score": 0.9996669292449951,
+  "part": "rightHip",
+  "position": {
+    "x": 335.82442220052087,
+    "y": 299.6274007161458
+  }
+}, {
+  "score": 0.9937479496002197,
+  "part": "leftKnee",
+  "position": {
+    "x": 283.44258626302087,
+    "y": 416.9686279296875
+  }
+}, {
+  "score": 0.9971883893013,
+  "part": "rightKnee",
+  "position": {
+    "x": 405.29905192057294,
+    "y": 368.97538248697913
+  }
+}, {
+  "score": 0.9565935730934143,
+  "part": "leftAnkle",
+  "position": {
+    "x": 275.13584391276044,
+    "y": 509.43538411458326
+  }
+}, {
+  "score": 0.9541161060333252,
+  "part": "rightAnkle",
+  "position": {
+    "x": 483.2630818684896,
+    "y": 436.8101806640625
+  }
+}].map(item => [item.position.x, item.position.y]).flat();
+
+const TARGET_POS_3 = [{
+  "score": 0.07121406495571136,
+  "part": "nose",
+  "position": {
+    "x": 289.2438151041667,
+    "y": 94.34494018554688
+  }
+}, {
+  "score": 0.06686632335186005,
+  "part": "leftEye",
+  "position": {
+    "x": 635.5045954386393,
+    "y": 117.53727213541666
+  }
+}, {
+  "score": 0.08135952055454254,
+  "part": "rightEye",
+  "position": {
+    "x": 291.4835611979167,
+    "y": 90.0947265625
+  }
+}, {
+  "score": 0.9765129089355469,
+  "part": "leftEar",
+  "position": {
+    "x": 356.6738688151042,
+    "y": 97.97532145182291
+  }
+}, {
+  "score": 0.9591643810272217,
+  "part": "rightEar",
+  "position": {
+    "x": 296.8337809244792,
+    "y": 93.65211995442706
+  }
+}, {
+  "score": 0.9938938617706299,
+  "part": "leftShoulder",
+  "position": {
+    "x": 392.890625,
+    "y": 158.47733561197916
+  }
+}, {
+  "score": 0.9985998272895813,
+  "part": "rightShoulder",
+  "position": {
+    "x": 260.4107666015625,
+    "y": 150.42964680989581
+  }
+}, {
+  "score": 0.9513225555419922,
+  "part": "leftElbow",
+  "position": {
+    "x": 467.5526021321615,
+    "y": 168.97133382161456
+  }
+}, {
+  "score": 0.9959094524383545,
+  "part": "rightElbow",
+  "position": {
+    "x": 179.5926513671875,
+    "y": 131.32814534505206
+  }
+}, {
+  "score": 0.9644811749458313,
+  "part": "leftWrist",
+  "position": {
+    "x": 549.9369812011719,
+    "y": 143.46809895833331
+  }
+}, {
+  "score": 0.9770116209983826,
+  "part": "rightWrist",
+  "position": {
+    "x": 92.71769205729169,
+    "y": 90.124755859375
+  }
+}, {
+  "score": 0.9919902682304382,
+  "part": "leftHip",
+  "position": {
+    "x": 344.3585408528646,
+    "y": 347.7084554036458
+  }
+}, {
+  "score": 0.9737558960914612,
+  "part": "rightHip",
+  "position": {
+    "x": 262.13116455078125,
+    "y": 339.0426839192708
+  }
+}, {
+  "score": 0.9826898574829102,
+  "part": "leftKnee",
+  "position": {
+    "x": 315.68357340494794,
+    "y": 469.7528076171875
+  }
+}, {
+  "score": 0.9939213991165161,
+  "part": "rightKnee",
+  "position": {
+    "x": 260.64963785807294,
+    "y": 460.00077311197913
+  }
+}, {
+  "score": 0.5993714928627014,
+  "part": "leftAnkle",
+  "position": {
+    "x": 318.701904296875,
+    "y": 544.7017822265625
+  }
+}, {
+  "score": 0.5228094458580017,
+  "part": "rightAnkle",
+  "position": {
+    "x": 255.26517740885419,
+    "y": 560.9686686197916
+  }
+}].map(item => [item.position.x, item.position.y]).flat();
+
+const TARGET_POS_4 = [{
+  "score": 0.9736052751541138,
+  "part": "nose",
+  "position": {
+    "x": 227.93656412760419,
+    "y": 231.23138427734375
+  }
+}, {
+  "score": 0.9057209491729736,
+  "part": "leftEye",
+  "position": {
+    "x": 217.8642578125,
+    "y": 235.34895833333331
+  }
+}, {
+  "score": 0.9607812762260437,
+  "part": "rightEye",
+  "position": {
+    "x": 229.98763020833337,
+    "y": 224.60563151041663
+  }
+}, {
+  "score": 0.36542895436286926,
+  "part": "leftEar",
+  "position": {
+    "x": 221.40983072916669,
+    "y": 241.76798502604163
+  }
+}, {
+  "score": 0.8499851226806641,
+  "part": "rightEar",
+  "position": {
+    "x": 251.45902506510419,
+    "y": 209.08685302734375
+  }
+}, {
+  "score": 0.9991108775138855,
+  "part": "leftShoulder",
+  "position": {
+    "x": 247.07421875,
+    "y": 280.72589111328125
+  }
+}, {
+  "score": 0.9957950115203857,
+  "part": "rightShoulder",
+  "position": {
+    "x": 292.9853515625,
+    "y": 215.8055419921875
+  }
+}, {
+  "score": 0.9941942095756531,
+  "part": "leftElbow",
+  "position": {
+    "x": 260.4375,
+    "y": 347.35477701822913
+  }
+}, {
+  "score": 0.9931871891021729,
+  "part": "rightElbow",
+  "position": {
+    "x": 293.35137939453125,
+    "y": 131.34718831380206
+  }
+}, {
+  "score": 0.9799391031265259,
+  "part": "leftWrist",
+  "position": {
+    "x": 258.7060750325521,
+    "y": 425.9352620442708
+  }
+}, {
+  "score": 0.8207806348800659,
+  "part": "rightWrist",
+  "position": {
+    "x": 286.2252197265625,
+    "y": 59.284027099609375
+  }
+}, {
+  "score": 0.9987395405769348,
+  "part": "leftHip",
+  "position": {
+    "x": 331.9275309244792,
+    "y": 350.7056884765625
+  }
+}, {
+  "score": 0.996920108795166,
+  "part": "rightHip",
+  "position": {
+    "x": 362.64082845052087,
+    "y": 333.686767578125
+  }
+}, {
+  "score": 0.8712299466133118,
+  "part": "leftKnee",
+  "position": {
+    "x": 279.6968180338542,
+    "y": 439.2561848958333
+  }
+}, {
+  "score": 0.9545165300369263,
+  "part": "rightKnee",
+  "position": {
+    "x": 394.1129557291667,
+    "y": 436.021240234375
+  }
+}, {
+  "score": 0.574531078338623,
+  "part": "leftAnkle",
+  "position": {
+    "x": 410.92087809244794,
+    "y": 518.4794921875
+  }
+}, {
+  "score": 0.780026376247406,
+  "part": "rightAnkle",
+  "position": {
+    "x": 255.26094563802087,
+    "y": 506.908203125
+  }
+}].map(item => [item.position.x, item.position.y]).flat();
 
 const videoWidth = 600;
 const videoHeight = 500;
@@ -65,6 +529,16 @@ let isNeedToShoot = false;
 let currentPose = -2;
 let prevPose = -1;
 
+let isSleeping = false;
+let prevPoseTimestamp = -1;
+let currentPoseTimestamp = -1;
+
+let timeStart;
+let timeEnd;
+
+let isPose1 = true;
+let isNone = false;
+
 const shoot = document.querySelector("#shoot");
 
 shoot.addEventListener("click", () => {
@@ -72,31 +546,34 @@ shoot.addEventListener("click", () => {
   isNeedToShoot = true;
   isShot = false;
 });
+const stop = document.querySelector("#stop");
 
-// const requestDebounce = () => {
-//   if ()
-// };
-// const poseChangeDebounce = () => {
-//     if (isPoseDetected && currentPose !== prevPose) {
-//         console.log({currentPose, prevPose});
-//         setTimeout(() => {
-//             isPoseDetected = false;
-//         }, 3000);
-//     }
-// };
+stop.addEventListener("click", () => {
+  updatePos({
+    last_pose: {
+      time_start: timeStart,
+      time_end: timeEnd,
+      pose_id: 1,
+    }
+  });
+});
 
-let counter = 10;
-setInterval(() => {
-  console.log(--counter);
-  if (counter < 0) {
-    isNeedToShoot = true;
-  }
-}, 1000);
+// let counter = 10;
+// setInterval(() => {
+//   console.log(--counter);
+//   if (counter < 0) {
+//     isNeedToShoot = true;
+//   }
+// }, 1000);
 
 const updatePos = data => {
-  fetch("https://arngry.herokuapp.com/pose", {
+  // fetch("https://arngry.herokuapp.com/pose", {
+  fetch("http://localhost:3000/pose", {
       method: "POST",
-      body: data
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(data)
     })
     .then(res => res.json())
     .then(res => console.log(res));
@@ -187,7 +664,7 @@ function setupGui(cameras, net) {
   guiState.net = net;
 
   if (cameras.length > 0) {
-    guiState.camera = cameras[0].deviceId;
+    guiState.camera = cameras[1].deviceId;
   }
 
   const gui = new dat.GUI({
@@ -532,98 +1009,72 @@ function detectPoseInRealTime(video, net) {
     // and draw the resulting skeleton and keypoints if over certain confidence
     // scores
 
-    // console.log(poses);
+    if (isNeedToShoot && !isShot) {
+      isShot = true;
+      console.log(JSON.stringify(poses[0].keypoints));
+    }
 
-    const pose = poses[0].keypoints;
+    let max = 1;
+    let posId = 0;
 
-    const leftShoulder = pose.find(item => item.part === "leftShoulder").position;
-    const leftWrist = pose.find(item => item.part === "leftWrist").position;
-    const leftElbow = pose.find(item => item.part === "leftElbow").position;
-    const leftEar = pose.find(item => item.part === "leftEar").position;
+    const posesArray = [TARGET_POS_1, TARGET_POS_2, TARGET_POS_3, TARGET_POS_4];
 
-    const rightShoulder = pose.find(item => item.part === "rightShoulder").position;
-    const rightWrist = pose.find(item => item.part === "rightWrist").position;
-    const rightElbow = pose.find(item => item.part === "rightElbow").position;
-    const rightEar = pose.find(item => item.part === "rightEar").position;
+    posesArray.forEach((vector, idx) => {
+      const poseVector1 = vector;
+      const poseVector2 = poses[0].keypoints.map(item => [(item.position.x), Math.floor(item.position.y)]).flat();
 
-    // if (isNeedToShoot && !isShot) {
-    //     console.log(JSON.stringify(pose.map(item => [item.position.x, item.position.y])));
-    //     isShot = true;
+      let cosineSimilarity = similarity(poseVector1, poseVector2);
+      let distance = 2 * (1 - cosineSimilarity);
+      const eDistance = Math.sqrt(distance);
+
+      if (eDistance < max) {
+        max = eDistance;
+        posId = idx;
+      }
+      // currentPoseTimeDiff = new Date().getTime();
+    });
+
+    const poseVector1 = posesArray[posId];
+    const poseVector2 = poses[0].keypoints.map(item => [(item.position.x), Math.floor(item.position.y)]).flat();
+
+    let cosineSimilarity = similarity(poseVector1, poseVector2);
+    let distance = 2 * (1 - cosineSimilarity);
+    const eDistance = Math.sqrt(distance);
+
+    // console.log(eDistance);
+    let prevPosIdx = 0;
+
+    if (eDistance < 0.2) {
+      if (prevPosIdx !== posId || !isPose1) {
+        prevPosIdx = posId;
+        isPose1 = true;
+        isNone = false;
+        console.log("Pose detected ", posId);
+        timeStart = new Date().getTime() - 3000;
+        timeEnd = new Date().getTime();
+        // updatePos({
+        //   last_pose: {
+        //     time_start: timeStart,
+        //     time_end: timeEnd,
+        //     pose_id: 1,
+        //   }
+        // });
+      }
+    } else {
+      if (!isNone) {
+        isPose1 = false;
+        isNone = true;
+        // console.log("None detected");
+        // prevPoseTimestamp = new Date().getTime();
+        // }
+      }
+    }
+
+
+    // if (prevPoseTimestamp && currentPoseTimestamp && prevPoseTimestamp - currentPoseTimestamp > 1000) {
+    //   console.log('YOU`RE FUCKED UP');
     // }
 
-    const p = pose.map(item => [Math.floor(item.position.x), Math.floor(item.position.y)]);
-    console.log(TARGET_POS_1.map((node, idx, arr) => {
-      const [x, y] = node;
-      const [x1, y1] = p[idx];
-
-      return similarity([x, y], [x1, y1]);
-    }));
-
-    // console.log(
-    //     distance(
-    //         TARGET_POS_1,
-    //         pose.map(item => [Math.floor(item.position.x), Math.floor(item.position.y)])
-    //     )
-    // );
-
-    // sqrt((x1 - x)**2 + (y1 - y)**2)
-
-    //     if (
-    //         leftWrist.y < leftShoulder.y &&
-    //         leftElbow.y < leftShoulder.y &&
-    //         rightWrist.y < rightShoulder.y &&
-    //         rightElbow.y < rightShoulder.y
-    //     ) {
-    //         prevPose = currentPose;
-    //         currentPose = 1;
-    //         console.log("Haaaands up!");
-    //     }
-
-    //     if (
-    //         leftWrist.y > leftShoulder.y &&
-    //         leftElbow.y > leftShoulder.y &&
-    //         rightWrist.y > rightShoulder.y &&
-    //         rightElbow.y > rightShoulder.y
-    //     ) {
-    //         prevPose = currentPose;
-    //         currentPose = 2;
-    //         console.log("Haaaands down!");
-    //     }
-
-    //     if (
-    //         leftWrist.y < leftShoulder.y &&
-    //         leftElbow.y < leftShoulder.y &&
-    //         rightWrist.y > rightShoulder.y &&
-    //         rightElbow.y > rightShoulder.y
-    //     ) {
-    //         prevPose = currentPose;
-    //         currentPose = 11;
-    //         console.log("Left hand is up!");
-    //     }
-
-    //     if (
-    //         leftWrist.y > leftShoulder.y &&
-    //         leftElbow.y > leftShoulder.y &&
-    //         rightWrist.y < rightShoulder.y &&
-    //         rightElbow.y < rightShoulder.y
-    //     ) {
-    //         prevPose = currentPose;
-    //         currentPose = 10;
-    //         console.log("Right hand is up!");
-    //     }
-    //     isPoseDetected = true;
-
-    // isNeedToShoot = false;
-    // isShot = false;
-    // }
-
-    // function cosineDistanceMatching(poseVector1, poseVector2) {
-    //     let cosineSimilarity = similarity(poseVector1, poseVector2);
-    //     let distance = 2 * (1 - cosineSimilarity);
-    //     return Math.sqrt(distance);
-    // }
-
-    // cosineDistanceMatching({}, {});
 
     poses.forEach(({
       score,
