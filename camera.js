@@ -522,6 +522,9 @@ const videoWidth = 600;
 const videoHeight = 500;
 const stats = new Stats();
 
+let tickCounter = 60;
+let tickNormalizerContainerY = [];
+
 let isPoseDetected = false;
 let isShot = false;
 let isNeedToShoot = false;
@@ -683,13 +686,13 @@ const guiState = {
     quantBytes: defaultQuantBytes
   },
   singlePoseDetection: {
-    minPoseConfidence: 0.1,
+    minPoseConfidence: 0.3,
     minPartConfidence: 0.5
   },
   multiPoseDetection: {
     maxPoseDetections: 5,
-    minPoseConfidence: 0.15,
-    minPartConfidence: 0.1,
+    minPoseConfidence: 0.3,
+    minPartConfidence: 0.3,
     nmsRadius: 30.0
   },
   output: {
@@ -1096,13 +1099,13 @@ function detectPoseInRealTime(video, net) {
         console.log("Pose detected ", posId);
         timeStart = new Date().getTime() - 3000;
         timeEnd = new Date().getTime();
-        // updatePos({
-        //   last_pose: {
-        //     time_start: timeStart,
-        //     time_end: timeEnd,
-        //     pose_id: 1,
-        //   }
-        // });
+        updatePos({
+          last_pose: {
+            time_start: timeStart,
+            time_end: timeEnd,
+            pose_id: posId,
+          }
+        });
       }
     } else {
       if (!isNone) {
@@ -1114,9 +1117,68 @@ function detectPoseInRealTime(video, net) {
       }
     }
 
+    const {
+      keypoints
+    } = poses[0];
+    const leftHipNode = keypoints.find(point => point.part === 'leftHip');
+    const rightHipNode = keypoints.find(point => point.part === 'rightHip');
+    const leftShoulderNode = keypoints.find(point => point.part === 'leftShoulder');
+    const rightShoulderNode = keypoints.find(point => point.part === 'rightShoulder');
+    const leftKneeNode = keypoints.find(point => point.part === 'leftKnee');
+    const rightKneeNode = keypoints.find(point => point.part === 'rightKnee');
+    const leftAnkleNode = keypoints.find(point => point.part === 'leftAnkle');
+    const rightAnkleNode = keypoints.find(point => point.part === 'rightAnkle');
 
-    // if (prevPoseTimestamp && currentPoseTimestamp && prevPoseTimestamp - currentPoseTimestamp > 1000) {
-    //   console.log('YOU`RE FUCKED UP');
+
+    if (poses[0].score > 0.3) {
+      // const avgShoulderX = (leftShoulderNode.position.x + rightShoulderNode.position.x) / 2;
+      const avgShoulderY = (leftShoulderNode.position.y + rightShoulderNode.position.y) / 2;
+      const avgHipY = (leftHipNode.position.y + leftHipNode.position.y) / 2;
+
+      const avgBodyPoint = (avgHipY + avgShoulderY) / 2;
+      if (tickCounter >= 0) {
+        console.log(tickCounter);
+
+        tickNormalizerContainerY.push(avgBodyPoint);
+        tickCounter--;
+      } else {
+        tickCounter = 60;
+        if (Math.max(...tickNormalizerContainerY) - Math.min(...tickNormalizerContainerY) > 100) {
+          updatePos({
+            last_pose: {
+              time_start: new Date().getTime() - 500,
+              time_end: new Date().getTime(),
+              pose_id: 99,
+            }
+          });
+        }
+        tickNormalizerContainerY = [];
+      }
+    }
+
+    // if (poses[0].score > 0.3 &&
+    //   leftAnkleNode.score > 0.3 &&
+    //   rightAnkleNode.score > 0.3 &&
+    //   leftKneeNode.score > 0.3 &&
+    //   rightKneeNode.score > 0.3 &&
+    //   leftHipNode.score > 0.3 &&
+    //   rightHipNode.score > 0.3) {
+    //   const leftHip = leftHipNode.position;
+    //   const rightHip = rightHipNode.position;
+    //   const leftKnee = leftKneeNode.position;
+    //   const rightKnee = rightKneeNode.position;
+    //   const leftAnkle = leftAnkleNode.position;
+    //   const rightAnkle = rightAnkleNode.position;
+
+    //   // Long jump
+    //   if (leftKnee.y < leftHip.y && rightKnee.y < rightHip.y) {
+    //     console.log("LONG JUMP");
+    //   }
+
+    //   // Short jump
+    //   if (leftAnkle.y < leftKnee.y && rightAnkle.y < rightKnee.y) {
+    //     console.log("SHORT JUMP");
+    //   }
     // }
 
 
